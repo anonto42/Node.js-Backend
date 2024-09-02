@@ -6,8 +6,8 @@ import createRoute from './Routes/user.Routes.js';
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.json({limit:"1000kb"}));
+app.use(express.urlencoded({extended: true , limit:"1000kb"}));
 app.use(cors(
     {
         origin:process.env.CORE_ORIGIN
