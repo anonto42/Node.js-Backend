@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
+    createdBy:{
+        type : mongoose.Schema.Types.ObjectId,
+        ref  : 'User'
+    },
     title : {
         type : String ,
         require : [true , "You must give a title"],
@@ -17,6 +21,10 @@ const postSchema = new mongoose.Schema({
         require : [true , "You must give a price"],
         min : [0 , "Price must be positive"],
         max : [1000 , "Price must not exceed 1000"]
+    },
+    catagory:{
+        type : String,
+        // enum: ["Logo" , "Image" , "Thamel"]
     },
     imageUrl : [
         {
