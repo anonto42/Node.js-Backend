@@ -18,6 +18,10 @@ const userRegister = async (req, res) => {
     res.status(200).json({message:"registation succesfull",newUser})
 }
 
+const login = async (req, res) => {
+    const { email, password } = req.body;
+}
+
 const postProduct = async (req, res) => {
     try {
         
@@ -142,4 +146,4 @@ const deleteProduct = async ( req, res ) => {
     }
 }
 
-export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct}
+export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct , login}
