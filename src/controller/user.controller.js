@@ -64,4 +64,16 @@ const postProduct = async (req, res) => {
     }
 }
 
-export { userRegister , postProduct }
+const getProducts = async( req , res ) => {
+    try {
+
+        const products = await Product.find();
+
+        res.status(200).json({products});
+        
+    } catch (error) {
+        console.log(error.message , "Some error in getProducts");
+    }
+}
+
+export { userRegister , postProduct , getProducts }
