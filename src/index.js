@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import DBconnenct from './DB/dbConnent.js';
 import dotenv from 'dotenv';
-import createRoute from './Routes/user.Routes.js';
+import createRoute from './Routes/user.routes.js';
 
 const app = express();
 
