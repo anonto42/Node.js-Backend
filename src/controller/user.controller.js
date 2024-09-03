@@ -70,10 +70,76 @@ const getProducts = async( req , res ) => {
         const products = await Product.find();
 
         res.status(200).json({products});
-        
+
     } catch (error) {
         console.log(error.message , "Some error in getProducts");
     }
 }
 
-export { userRegister , postProduct , getProducts }
+const updatedProduct = async ( req , res ) => {
+    try {
+        
+        const { Data } = req.body
+
+        const { title , data } = Data;
+
+        const { field , newValue } = data;
+
+        if (field === "price") {
+            const updatedProduct = await Product.updateOne(
+                {
+                    title
+                },
+                {
+                    $set : { price : newValue }
+                }
+            )
+            return res.status(222).json({data:updatedProduct});
+        }
+
+        if (field === "description") {
+           const updatedProduct = await Product.updateOne(
+                {
+                    title
+                },
+                {
+                    $set : { description : newValue }
+                }
+            )
+            return res.status(222).json({data:updatedProduct}); 
+        }
+
+        if(field === "catagory"){
+            const updatedProduct = await Product.updateOne(
+                {
+                    title
+                },
+                {
+                    $set : { catagory : newValue }
+                }
+            )
+            return res.status(222).json({data:updatedProduct});
+        }
+
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const deleteProduct = async ( req, res ) => {
+    try {
+        
+        const { title } = req.body;
+
+        const deleteProduct = await Product.deleteOne({title});
+
+        res.status(222).json({message:"delete produt done", data:deleteProduct});
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({message:"Server error"})
+    }
+}
+
+export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct}
