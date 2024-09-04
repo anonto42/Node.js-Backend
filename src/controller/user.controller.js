@@ -3,6 +3,22 @@ import { uploadOnCloudinary } from '../util/cloudinary.js';
 import{ UserModel} from './../Model/user.model.js';
 
 
+const generateAccesTokenAndRefreshTokens = async (userId) =>{
+    try {
+        const user = await UserModel.findById(userId);
+        if(!user) return console.log("User not found");
+        const accestokens = user.generateAccesToken();
+        const refreshtoken = user.generateRefreshToken();
+        
+        user.refreshToken = refreshtoken;
+        await user.save({validateBeforeSave:false});
+
+        return { accestokens , refreshtoken }
+    } catch (error) {
+        console.log(error , {message:"some things went wrong in generating tokens"})
+    }
+}
+
 const userRegister = async (req, res) => {
     const { email , password , phone , firstName , lastName } = req.body
 
@@ -11,7 +27,6 @@ const userRegister = async (req, res) => {
     // check if user already exists
     const user = await UserModel.findOne({email});
     if(user) return res.status(409).json({message:"Email already exists try another email address"});
-
     // create new user
     const newUser = await UserModel.create( { email , password , phone , firstName , lastName })
 
@@ -20,6 +35,62 @@ const userRegister = async (req, res) => {
 
 const login = async (req, res) => {
     const { email, password } = req.body;
+    
+    if(!email) return res.status(401).json({message:"Please enter the email address"});
+    
+    const user = await UserModel.findOne({ email });
+    
+    if(!user) return res.status(444).json({ message :"your account was not exists"});
+    
+    const passwordIsCorrect = await user.isPasswordCorrect(password);
+    
+    if(!passwordIsCorrect) return res.status(402).json({message:"Your password is incorrect"});
+    
+    const { accestokens , refreshtoken } = await generateAccesTokenAndRefreshTokens(user._id);
+
+    const loggedInUser = await UserModel.findById(user._id).select("-password -refreshToken");
+
+    const option = {
+        httpOnly : true,
+        secure : true
+    }
+
+    return res
+    .status(200)
+    .cookie("accesToken",accestokens,option)
+    .cookie("refreshToken" , refreshtoken , option)
+    .json(
+        {
+            message:"Login successful",
+            loggedInUser,
+            accestokens,
+            refreshtoken
+        }
+    )
+
+}
+
+const logout = async (req ,res) => {
+    await UserModel.findByIdAndUpdate(
+        req.user._id,
+    {
+        $set : {
+            refreshToken : undefined
+        },
+    },
+    {
+        new : true
+    }
+)
+    const options = {
+    httpOnly : true,
+    secure : true
+}
+    return res
+    .status(200)
+    .clearCookie("accestokens",options)
+    .clearCookie("refreshtoken",options)
+    .json({message:"Logged out successfully"})
 }
 
 const postProduct = async (req, res) => {
@@ -146,4 +217,4 @@ const deleteProduct = async ( req, res ) => {
     }
 }
 
-export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct , login}
+export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct , login , logout }

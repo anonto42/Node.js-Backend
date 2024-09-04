@@ -3,11 +3,13 @@ import cors from 'cors';
 import DBconnenct from './DB/dbConnent.js';
 import dotenv from 'dotenv';
 import createRoute from './Routes/user.routes.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 app.use(express.json({limit:"1000kb"}));
 app.use(express.urlencoded({extended: true , limit:"1000kb"}));
+app.use(cookieParser());
 app.use(cors(
     {
         origin:process.env.CORE_ORIGIN
