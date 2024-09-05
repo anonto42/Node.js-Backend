@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { userRegister , postProduct ,  getProducts , updatedProduct , deleteProduct , login , logout , refreshAccessToken} from '../controller/user.controller.js';
+import { userRegister , postProduct ,  getProducts , updatedProduct , deleteProduct , login , logout , refreshAccessToken , getUsers} from '../controller/user.controller.js';
 import { upload } from '../middleware/uploader.middleware.js';
 import { verifyJwt } from '../middleware/auth.middleware.js';
 
@@ -27,11 +27,14 @@ createRoute.route("/postProduct").post( upload.fields(
 
 createRoute.route("/refreshAccessToken").post(refreshAccessToken);
 
+createRoute.route( "/getUser" ).get( verifyJwt , getUsers );
+
 createRoute.route("/getProducts").get(getProducts);
 
 createRoute.route("/updateProduct").put(updatedProduct);
 
 createRoute.route("/deleteProduct").delete(deleteProduct);
+
 
 
 export default createRoute;
