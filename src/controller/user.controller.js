@@ -94,6 +94,12 @@ const logout = async (req ,res) => {
     .json({message:"Logged out successfully"})
 }
 
+const getUsers = async (req , res) => {
+    const user = await UserModel.findById(req.user._id).select("-password -refreshToken")
+    if(!user) return res.status(401).json({message:"You are not authorized to access"});
+    return res.status(202).json({userData : user})
+}
+
 const refreshAccessToken = async (req ,res) => {
 
     const inComingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
@@ -252,4 +258,4 @@ const deleteProduct = async ( req, res ) => {
     }
 }
 
-export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct , login , logout , refreshAccessToken}
+export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct , login , logout , refreshAccessToken , getUsers}
