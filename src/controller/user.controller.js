@@ -1,6 +1,7 @@
 import { Product } from '../Model/postProduct.model.js';
 import { uploadOnCloudinary } from '../util/cloudinary.js';
 import{ UserModel} from './../Model/user.model.js';
+import jwt from 'jsonwebtoken';
 
 
 const generateAccesTokenAndRefreshTokens = async (userId) =>{
@@ -91,6 +92,40 @@ const logout = async (req ,res) => {
     .clearCookie("accestokens",options)
     .clearCookie("refreshtoken",options)
     .json({message:"Logged out successfully"})
+}
+
+const refreshAccessToken = async (req ,res) => {
+
+    const inComingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+    if(!inComingRefreshToken) return res.status(406).json({message:"Unable to refresh the acces token"});
+
+    const deCodedTocken = jwt.verify(inComingRefreshToken,process.env.REFRESH_TOKEN_SECRET);
+
+    if(!deCodedTocken) return res.status(401).json({message:"Invalid refresh token"});
+
+    const user = UserModel.findById(deCodedTocken?._id);
+    
+    if(!user) return res.status(401).json({message:"Invalid user"});
+
+    if (inComingRefreshToken !== user?.refreshToken ) return res.status(401).json({message:"Refresh token is expired or used"});
+
+    const option = {
+        httpOnly : true,
+        secure : true
+    }
+
+    const { accestokens , refreshtoken } = await generateAccesTokenAndRefreshTokens(user._id);
+
+    return res
+    .status(200)
+    .cookie("accestokers" , accestokens , option)
+    .cookie("refreshtoken" , refreshtoken , option)
+    .json(
+        {
+            message:"Access token refreshed successfully"
+        }
+    )
 }
 
 const postProduct = async (req, res) => {
@@ -217,4 +252,4 @@ const deleteProduct = async ( req, res ) => {
     }
 }
 
-export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct , login , logout }
+export { userRegister , postProduct , getProducts , updatedProduct , deleteProduct , login , logout , refreshAccessToken}

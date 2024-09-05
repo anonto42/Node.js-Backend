@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     phone:{
         type:String,
         required: true,
-        unique: true,
+        unique: [true, 'please enter an outher phone number'],
     },
     refreshToken:{
         type: String,
@@ -45,13 +45,11 @@ const userSchema = new mongoose.Schema({
     }
 },{timestamps:true});
 
-userSchema.pre("save", async function(next) {
-    
+userSchema.pre("save", async function (next) {
     if(!this.isModified("password")) return next();
 
-    await bcrypt.hash(this.password, 10 );
-
-    next();
+    this.password = await bcrypt.hash(this.password, 10);
+    next()
 })
 
 userSchema.methods.isPasswordCorrect = async function(password){
