@@ -10,11 +10,11 @@ const app = express();
 app.use(express.json({limit:"1000kb"}));
 app.use(express.urlencoded({extended: true , limit:"1000kb"}));
 app.use(cookieParser());
-app.use(cors(
-    {
-        origin:process.env.CORE_ORIGIN
-    }
-));
+// app.use(cors(
+//     {
+//         origin:process.env.CORE_ORIGIN
+//     }
+// ));
 dotenv.config();
 
 //Import routes
