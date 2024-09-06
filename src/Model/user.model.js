@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
     },
     isAdmin:{
         type: Boolean,
+        default : false,
     },
     order:{
         type: mongoose.Schema.Types.ObjectId,
