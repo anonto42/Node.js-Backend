@@ -97,7 +97,7 @@ const logout = async (req ,res) => {
 const getUsers = async (req , res) => {
     const user = await UserModel.findById(req.user._id).select("-password -refreshToken")
     if(!user) return res.status(401).json({message:"You are not authorized to access"});
-    return res.status(202).json({userData : user})
+    return res.status(202).json({user})
 }
 
 const refreshAccessToken = async (req ,res) => {
